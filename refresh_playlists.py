@@ -21,13 +21,16 @@ def connect_to_plex(username, password, server_name):
     return plex
 
 
-def add_old_episodes_to_playlist(plex, library_name, show_name, days=30):
+def add_old_episodes_to_playlist(plex, library_name, show_name):
     """
-    Grab the current show
+    Grab the current show.
     Look at all episodes.
     If episode has never been viewed, add to playlist.
-    Otherwise, if episode has not been viewed in last 30 days, add to playlist
+    Otherwise, if episode has not been viewed in last X number of days 
+        as specified in the script config, add to playlist.
     """
+
+    days = int(plex_config.get('plex_config', 'recently_played_days'))
 
     old_episodes_playlist = []
     plex_current_show = plex.library.section(library_name).get(show_name)

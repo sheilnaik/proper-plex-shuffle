@@ -1,11 +1,12 @@
+import plexapi.exceptions
 from plexapi.myplex import MyPlexAccount
 from datetime import date
 import logging
 import configparser
-
+import random
 
 plex_config = configparser.ConfigParser()
-plex_config.read("plex_config.ini")
+plex_config.read("/plex_config.ini")
 
 TODAY = date.today()
 
@@ -42,7 +43,7 @@ def add_old_episodes_to_playlist(plex, library_name, show_name):
             days_since_played = (TODAY - episode.lastViewedAt.date()).days
             if days_since_played > days:
                 old_episodes_playlist.append(episode)
-    
+    random.shuffle(old_episodes_playlist)
     return old_episodes_playlist
 
 
@@ -50,10 +51,14 @@ def delete_existing_playlist(plex, playlist_name):
     """If playlist already exists, delete it."""
 
     existing_playlists = [playlist.title for playlist in plex.playlists()]
-
+    logging.info(f'Found existing playlists: {existing_playlists}')
     if playlist_name in existing_playlists:
-        plex.playlist(playlist_name).delete()
-
+        logging.info(f'Deleting existing playlist: {playlist_name}')
+        try:
+            plex.playlist(playlist_name).delete()
+        except plexapi.exceptions.BadRequest:
+#             this is ok and a bug in plex api and causing 204 but no real error found
+            logging.info(f'Ate 204 error but was able to delete the playlist')
 
 def create_new_playlist(plex, playlist_name, old_episodes_playlist):
     """Create a new playlist and add all the old episodes to it"""

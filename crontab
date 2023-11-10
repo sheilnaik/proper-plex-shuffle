@@ -1,0 +1,1 @@
+*/30 * * * * python /refresh_playlists.py >> /logfile

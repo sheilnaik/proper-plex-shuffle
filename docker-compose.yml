@@ -1,0 +1,11 @@
+version: "3.9"  # Use the appropriate version of Docker Compose
+
+services:
+  plex_shuffle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: plex_shuffle
+    environment:
+      - TZ=America/Los_Angeles
+    # Add other configuration options for your service here, e.g., ports, volumes, environment variables, etc.
